@@ -1,71 +1,48 @@
 //
-//  TestViewController.m
+//  ManualTestViewController.m
 //  MultilineLabelFitWidth
 //
 //  Created by Don Mag on 8/3/18.
 //  Copyright © 2018 DonMag. All rights reserved.
 //
 
-#import "TestViewController.h"
+#import "ManualTestViewController.h"
 
-@interface TestViewController ()
+@interface ManualTestViewController ()
 
 @property (strong, nonatomic) UIButton *myButton;
 
 @property (strong, nonatomic) UILabel *myLabel;
 
-@property (strong, nonatomic) NSLayoutConstraint *myLabelWidthConstraint;
-
 @end
 
-NSInteger iCounter = 0;
+NSInteger iCounterM = 0;
 
-@implementation TestViewController
+@implementation ManualTestViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-	self.view.backgroundColor = [UIColor colorWithRed:255.0 / 255.0 green:212.0 / 255.0 blue:121.0 / 255.0 alpha:1.0];
-
+	self.view.backgroundColor = [UIColor colorWithRed:160.0 / 255.0 green:160.0 / 255.0 blue:255.0 / 255.0 alpha:1.0];
+	
 	// instatiate the button
 	_myButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	
 	// add it to the view
 	[self.view addSubview:_myButton];
+
+	_myButton.frame = CGRectMake(0, 0, 200.0, 30.0);
+	_myButton.center = CGPointMake(self.view.center.x, 140.0);
 	
-	// we'll use auto-layout
-	_myButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-	// constrain the button 40-pts from the top, centered horizontally
-	[_myButton.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:140.0].active = YES;
-	[_myButton.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor constant:0.0].active = YES;
-
 	// instantiate a label
 	_myLabel = [UILabel new];
 	
 	// add it to the view
 	[self.view addSubview:_myLabel];
 	
-	// we'll use auto-layout
-	_myLabel.translatesAutoresizingMaskIntoConstraints = NO;
+	_myLabel.frame = CGRectMake(0, 200, 200.0, 30.0);
+	_myLabel.center = CGPointMake(self.view.center.x, _myLabel.center.y);
 	
-	// constrain the label 40-pts from the bottom of the button, centered horizontally
-	[_myLabel.topAnchor constraintEqualToAnchor:_myButton.bottomAnchor constant:40.0].active = YES;
-	[_myLabel.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor constant:0.0].active = YES;
-
-	// instantiate a width constraint, set to 200 (it will change via code)
-	_myLabelWidthConstraint = [NSLayoutConstraint
-							   constraintWithItem:_myLabel
-							   attribute:NSLayoutAttributeWidth
-							   relatedBy:NSLayoutRelationEqual
-							   toItem:nil
-							   attribute:NSLayoutAttributeNotAnAttribute
-							   multiplier:1.0
-							   constant:200.0];
-	
-	// activate it
-	_myLabelWidthConstraint.active = YES;
-
 	// set the label's font, centered alignment, multi-line
 	_myLabel.font = [UIFont systemFontOfSize:20.0];
 	_myLabel.textAlignment = NSTextAlignmentCenter;
@@ -83,23 +60,23 @@ NSInteger iCounter = 0;
 	[_myButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
 	[_myButton setTitle:@"Tap to Change Text" forState:UIControlStateNormal];
 	[_myButton addTarget:self action:@selector(changeTextTapped:) forControlEvents:UIControlEventTouchUpInside];
-
+	
 }
 
 - (void) viewWillAppear:(BOOL)animated {
-
+	
 	[super viewWillAppear:animated];
 	
 	// adjust the width of the label
-	[self adjustWidthConstraint:_myLabelWidthConstraint forLabel:_myLabel];
-
+	[self adjustFrameForLabel:_myLabel];
+	
 }
 
 -(void) changeTextTapped:(UIButton*)sender {
 	
 	NSString *theString = @"";
 	
-	switch (iCounter) {
+	switch (iCounterM) {
 		case 0:
 			theString = @"A short string";
 			break;
@@ -124,16 +101,16 @@ NSInteger iCounter = 0;
 	_myLabel.text = theString;
 	
 	// adjust the width of the label
-	[self adjustWidthConstraint:_myLabelWidthConstraint forLabel:_myLabel];
+	[self adjustFrameForLabel:_myLabel];
 	
 	// increment our "change text counter"
-	if (++iCounter > 3) {
-		iCounter = 0;
+	if (++iCounterM > 3) {
+		iCounterM = 0;
 	}
 	
 }
 
--(void) adjustWidthConstraint:(NSLayoutConstraint *)theWidthConstraint forLabel:(UILabel *)theLabel {
+-(void) adjustFrameForLabel:(UILabel *)theLabel {
 	
 	// get the label's container / superview
 	UIView *theContainingView = [theLabel superview];
@@ -156,9 +133,11 @@ NSInteger iCounter = 0;
 									   context:nil];
 	
 	// change the constant of the constraint to the calculated width
-	theWidthConstraint.constant = ceil(r.size.width);
+	CGRect newRect = theLabel.frame;
+	newRect.size = r.size;
+	theLabel.frame = newRect;
+	theLabel.center = CGPointMake(self.view.center.x, theLabel.center.y);
 
 }
-
 
 @end
